@@ -1,0 +1,18 @@
+service: my-tdd-service
+
+frameworkVersion: ">=1.1.0 <2.0.0"
+
+plugins:
+  - serverless-mocha-plugin
+
+provider:
+  name: aws
+  runtime: nodejs4.3
+
+functions:
+  currentTime:
+    handler: handler.endpoint
+    events:
+      - http:
+          path: ping
+          method: get

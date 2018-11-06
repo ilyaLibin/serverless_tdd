@@ -1,0 +1,14 @@
+{
+  "name": "my-tdd-service",
+  "version": "1.0.0",
+  "description": "Example demonstrates how to setup a simple HTTP GET endpoint",
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "run-when-changed": "^2.1.0",
+    "serverless-mocha-plugin": "^1.9.0"
+  },
+  "scripts": {
+    "tdd": "node_modules/run-when-changed/bin/run-when-changed.js --watch '*/**/*.js' --exec 'sls invoke test'"
+  }
+}
