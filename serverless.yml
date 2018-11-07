@@ -1,18 +1,65 @@
-service: my-tdd-service
+service: vocabjuice
 
 frameworkVersion: ">=1.1.0 <2.0.0"
 
 plugins:
   - serverless-mocha-plugin
-
+  - serverless-plugin-epsagon
+  - serverless-dynamodb-local
+  - serverless-offline
 provider:
   name: aws
-  runtime: nodejs4.3
+  runtime: nodejs8.10
+  stage: production
+  environment:
+    DYNAMODB_USER_TABLE: Licenses
+  region: us-west-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+      Resource:
+        - arn:aws:lambda:us-east-1:419892788374:function:vocabjuice-dev-paddleHook
 
 functions:
-  currentTime:
-    handler: handler.endpoint
+  paddleHook:
+    handler: handler.paddleHook
     events:
       - http:
-          path: ping
-          method: get
+          path: paddle
+          method: post
+          resp: json
+
+custom:
+  epsagon:
+    token: f12b9a6b-c658-416d-ae79-c7e37d49b04f
+    appName: vocabjuice
+  dynamodb:
+    start:
+      port: 4569
+      inMemory: true
+      migrate: true # create tables on start
+
+resources:
+  Resources:
+    Licenses:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Licenses
+        AttributeDefinitions:
+          - AttributeName: "email"
+            AttributeType: "S"
+          - AttributeName: "uuid"
+            AttributeType: "S"
+        KeySchema:
+          - AttributeName: "email"
+            KeyType: "HASH"
+          - AttributeName: "uuid"
+            KeyType: "RANGE"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
